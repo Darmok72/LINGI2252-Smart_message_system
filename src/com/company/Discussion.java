@@ -6,14 +6,14 @@ import java.util.Hashtable;
 
 public class Discussion {
     public Hashtable<Message,Date> messages;
-    public ArrayList<String> users;
+    public ArrayList<String> users_name;
 
-
+//TODO more than two users in discussion
     public void discussion(String a, String b){
         messages = new Hashtable<>();
-        users = new ArrayList<>();
-        users.add(a);
-        users.add(b);
+        users_name = new ArrayList<>();
+        users_name.add(a);
+        users_name.add(b);
     }
     public boolean find_message(Message m){
         return messages.contains(m);
