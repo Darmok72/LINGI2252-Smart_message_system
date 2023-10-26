@@ -2,39 +2,44 @@ package com.company;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
     public static void main(String[] args) {
-        // c_user user, a_friend(user,name), s_message(user,friend,message)
+        /*
+        selon le type de feature activé des commandes supplémentaires seront accessibles. si la feature n'est pas activée
+        et que la commande est appelée alors il y aura un message d'erreur
 
-	// hardcoded test
-        String[] l = {"c_user Billy", "a_friend Robert","s_message Robert,message divers"};
+         c user_name :  create user with name user_name
+         a user_name friend_name r_name : add friend friend_name to user user_name
+         s user_name1 user_name2 message : send a from user_name1 to user_name2
 
-         ArrayList<User> user = new ArrayList<>();
-        for (String s: l) {
-            if (s.startsWith("c_user") ){
-                User u = new User();
-                u.user(s.substring(7));
-                user.add(u);
-            }
-            else if (s.startsWith("a_friend")){
-                user.get(0).add_friend(s.substring(9));
-            }
-            else if (s.startsWith("s_message")){
-                Discussion d = new Discussion();
-                d.discussion("Billy","Robert");
-                Message m = new Message();
-                m.content="message divers";
-                m.date= new Date();
-                d.send(m);
-                user.get(0).add_discussion(d);
-            }
+         // if the message send is the first we should create a new discussion, if not just add the message to the discussion
+
+*/
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter a command: ");
+        String input = scanner.nextLine();
+
+        Pattern pattern = Pattern.compile("test\\s+(\\w+)\\s+(\\w+)\\s+\"([^\"]+)\"");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.matches()) {
+            String user1 = matcher.group(1);
+            String user2 = matcher.group(2);
+            String message = matcher.group(3);
+
+            System.out.println(" user1: " + user1 + ", user2: " + user2 + ", message: " + message);
+        } else {
+            System.out.println("Invalid command format.");
         }
 
-      //on vérifie
-        System.out.println(user.get(0).name);
-        System.out.println(user.get(0).friend_list.get(0));
-
+        scanner.close();
     }
+
 }
+
