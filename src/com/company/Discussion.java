@@ -19,7 +19,7 @@ public class Discussion {
     }
 
     public void addMessage(Message m){
-        messages.put(m,Instant.now);
+        messages.put(m,Instant.now());
     }
     public void addUser(String userName) {
     users.add(userName);
