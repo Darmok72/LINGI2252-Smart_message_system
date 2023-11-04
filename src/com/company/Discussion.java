@@ -1,29 +1,27 @@
 package com.company;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Instant;
 import java.util.Hashtable;
+import java.util.List;
 
 public class Discussion {
-    public Hashtable<Message,Date> messages;
-    public ArrayList<String> users_name;
+    public Hashtable<Message,Instant> messages;   
+    public List<String> users;
 
 //TODO more than two users in discussion
-    public void discussion(String a, String b){
+    public Discussion(List<String> participants){
         messages = new Hashtable<>();
-        users_name = new ArrayList<>();
-        users_name.add(a);
-        users_name.add(b);
+        users = new ArrayList<>(participants);
     }
     public boolean find_message(Message m){
-        return messages.contains(m);
+        return messages.containsKey(m);
     }
 
-    public void send(Message m){
-        messages.put(m,m.date);
+    public void addMessage(Message m){
+        messages.put(m,Instant.now);
     }
-
-    public void receive(Message m){
-        messages.put(m,m.date);
-    }
+    public void addUser(String userName) {
+    users.add(userName);
+}
 }
