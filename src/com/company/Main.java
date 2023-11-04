@@ -1,10 +1,13 @@
 package com.company;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
@@ -21,8 +24,8 @@ public class Main {
          // if the message send is the first we should create a new discussion, if not just add the message to the discussion
 
 */
-    public static ArrayList<User> users;
-    public static ArrayList<Discussion> discussions;
+        public static List<User> users;
+        public static List<Discussion> discussions;
 
         public static void main(String[] args) {
             Scanner scanner = new Scanner(System.in);
@@ -59,16 +62,19 @@ public class Main {
         Matcher matcher = pattern.matcher(input);
         if (matcher.matches()) {
             String name = matcher.group(1);
-            //create a new user
-            //TODO must be unique name
-            User new_user = new User();
-            new_user.user(name);
-            users.add(new_user);
-            System.out.println("New user added: " + name );
-        } else {
-            System.out.print("Invalid send command format, must look like : send_message user_name1 user_name2 \"message\" ");
-        }
 
+            // Check if the name is unique
+            boolean isUnique = users.stream().noneMatch(user -> user.getName().equals(name));
+            if (isUnique) {
+                User newUser = new User(name);
+                users.add(newUser);
+                System.out.println("New user added: " + name);
+            } else {
+                System.out.println("User with the same name already exists.");
+            }
+        } else {
+            System.out.println("Invalid create_user command format. It should be: create_user user_name");
+        }
     }
     //send_message user_name1 user_name2 message : send a from user_name1 to user_name2
         public static void sendMessage(String input) {
@@ -116,6 +122,24 @@ public class Main {
                 System.out.println("Invalid send command format, must look like : send_message user_name1 user_name2 \"message\" ");
             }
         }
+        public static User getUserByName(String name) {
+                for (User user : users) {
+                    if (user.getName().equals(name)) {
+                        return user;
+                    }
+                }
+                return null;
+    }
+        public static Discussion findDiscussionByUsers(String user1, String user2) {
+                for (Discussion discussion : discussions) {
+                    List<String> users = discussion.getUsers();
+                    if (users.contains(user1) && users.contains(user2)) {
+                        return discussion;
+            }
+        }
+                return null;
+    }
+        
 
     }
 
