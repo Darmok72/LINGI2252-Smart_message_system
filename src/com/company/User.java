@@ -6,12 +6,12 @@ import java.util.HashMap;
 public class User {
     public String email;
     public String name;
-    public ArrayList friend_list;
-    public  ArrayList<Discussion> discussion_list;
+    public ArrayList<String> friend_list;
+    public ArrayList<Discussion> discussion_list;
 
 
-    public void user(String n){
-        name=n;
+    public User(String n){
+       name=n;
        friend_list = new ArrayList();
        discussion_list = new ArrayList();
 
@@ -32,12 +32,19 @@ public class User {
         discussion_list.add(d);
     }
 
-    public ArrayList get_discussion(){
+    public ArrayList<Discussion> get_discussion(){
         return discussion_list;
     }
 
     public void remove_discussion(Discussion d){
         discussion_list.remove(d);
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String s) {
+        name = s;
     }
 
 }
