@@ -1,10 +1,10 @@
 package com.company;
 
-import java.util.Date;
+import java.util.Instant;
 
 public class Message {
     public String content;
-    public Date date;
+    public Instant date;
 
     public Object[] see_details(){
         return new Object[] {content, date};
