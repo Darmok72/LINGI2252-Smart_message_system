@@ -1,6 +1,8 @@
 package com.company;
 
 import java.util.Instant;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Message {
     public String content;
@@ -10,7 +12,17 @@ public class Message {
         return new Object[] {content, date};
     }
 
-    public boolean equals(Message m){
-        return m.content.equals(content);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return content.equals(message.content) && date.equals(message.date);
+}
+    public Map<String, Object> getDetails() {
+        Map<String, Object> details = new HashMap<>();
+        details.put("content", content);
+        details.put("date", date);
+        return details;
     }
 }
