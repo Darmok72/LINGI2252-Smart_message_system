@@ -1,13 +1,8 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 public class Main {
 
@@ -19,18 +14,34 @@ public class Main {
          create_user user_name :  create user with name user_name
          add_friend user_name friend_name user_name : add friend friend_name to user user_name
          send_message user_name1 user_name2 "message" : send a from user_name1 to user_name2
+         create_call [ui]*: create call  with optional users name
+         activate_feature feature_name : activate the feature_name (Call,Mute,Message_muter,Call_muter)
          exit : end and close app
+
+         //TODO
+         add_to_call call_name [ui]* : add user to call_name
+         mute_call call_name
+         mute_call_message call_name
+
 
          // if the message send is the first we should create a new discussion, if not just add the message to the discussion
 
 */
         public static List<User> users;
         public static List<Discussion> discussions;
+        public static List<Call> calls;
+
+        //features
+        public static boolean hasCall=false;
+        public static boolean hasMute=false;
+        public static boolean hasCallMuter=false;
+        public static boolean hasMessageMuter=false;
 
         public static void main(String[] args) {
             Scanner scanner = new Scanner(System.in);
              users = new ArrayList<>();
              discussions = new ArrayList<>();
+             calls = new ArrayList<>();
 
             while(true) {
                 System.out.print("Enter a command: ");
@@ -48,12 +59,51 @@ public class Main {
                 else if (input.startsWith("create_user")) {
                     createUser(input);
                 }
+                //   activate_feature feature_name : activate the feature_name (Call,Mute,Message_muter,Call_muter)
+                else if (input.startsWith("activate_feature")) {
+                    activateFeature(input);
+                }
+                //   create_call [ui]*: create call  with optional users name
+                else if (input.startsWith("create_call")) {
 
+                    //check if feature is enabled
+                    if(hasCall){
+                    createCall(input);
+                } else{
+                        System.out.println("Invalid command : The call feature is not activated");
+                    }
+                }
                 else {
                     System.out.println("Invalid command");
                 }
             }
             scanner.close();
+        }
+
+    //   activate_feature feature_name : activate the feature_name (Call,Mute,Message_muter,Call_muter)
+        public static void activateFeature(String input){
+            Pattern pattern = Pattern.compile("activate_feature\\s+(\\w+)");
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.matches()) {
+                String feature_name = matcher.group(1);
+                if(feature_name.equals("Call")){hasCall=true;}
+                if(feature_name.equals("Mute")){hasMute=true;}
+                if(feature_name.equals("Message_muter")){hasMessageMuter=true;}
+                if(feature_name.equals("Call_muter")){hasCallMuter=true;}
+            }
+        }
+
+        public static void createCall(String input){
+            Pattern pattern = Pattern.compile( "create_call(?:\\s+\\w+)*");
+            Matcher matcher = pattern.matcher(input);
+            String[] users_in_call = new String[0];
+            if (matcher.find()) {
+                String usersString = matcher.group(0);
+                 users_in_call = usersString.split("\\s+");
+            }
+            Call new_call = new Call(hasMute,hasCallMuter,hasMessageMuter);
+            new_call.users.addAll(Arrays.asList(users_in_call));
+            calls.add(new_call);
         }
 
         // create_user user_name :  create user with name user_name
@@ -97,13 +147,13 @@ public class Main {
 
                 // create message
                 Message m = new Message();
-                m.date= new Date();
+              //  m.date= new Date();
                 m.content = message;
 
                 //check if the discussion between the two user already exists
                 //TODO for the moment here a discussion can have only two user
                 //TODO verifiy if the contains correctly checks if the discussion exists and contain the users
-                for (Discussion discussion: discussions) {
+           /*     for (Discussion discussion: discussions) {
                     if (discussion.users_name.size()!=2 || !discussion.users_name.contains(user1) || !discussion.users_name.contains(user2)){
                        d_exist = true;
                         //discusison already exist
@@ -117,6 +167,7 @@ public class Main {
                     discussion.messages.put(m,m.date);
                     discussions.add(discussion);
                 }
+                */
                 System.out.println("Sending from: " + user1 + " to: " + user2 + " with message: " + message);
             } else {
                 System.out.println("Invalid send command format, must look like : send_message user_name1 user_name2 \"message\" ");
@@ -130,7 +181,7 @@ public class Main {
                 }
                 return null;
     }
-        public static Discussion findDiscussionByUsers(String user1, String user2) {
+      /*  public static Discussion findDiscussionByUsers(String user1, String user2) {
                 for (Discussion discussion : discussions) {
                     List<String> users = discussion.getUsers();
                     if (users.contains(user1) && users.contains(user2)) {
@@ -138,7 +189,7 @@ public class Main {
             }
         }
                 return null;
-    }
+    }*/
         
 
     }
