@@ -11,21 +11,20 @@ public class Main {
         selon le type de feature activé des commandes supplémentaires seront accessibles. si la feature n'est pas activée
         et que la commande est appelée alors il y aura un message d'erreur
 
-         create_user user_name :  create user with name user_name
-         add_friend user_name friend_name user_name : add friend friend_name to user user_name
-         send_message user_name1 user_name2 "message" : send a from user_name1 to user_name2
-         create_call [ui]*: create call  with optional users name
-         activate_feature feature_name : activate the feature_name (Call,Mute,Message_muter,Call_muter)
-         exit : end and close app
+         Command List :
+         create_user user_name                          create user with name user_name
+         add_friend user_name friend_name user_name     add friend friend_name to user user_name
+         send_message user_name1 user_name2 "message"   send a from user_name1 to user_name2
+         create_call [ui]*                              create call  with optional users name
+         activate_feature feature_name                  activate the feature_name (Call,Mute,Message_muter,Call_muter)
+         mute_calls user_name                           mute the calls for this user_name
+         unmute_calls user_name                         unmute the calls for this user_name
+         mute_messages user_name                        mute messages for user_name
+         unmute_messages user_name                      mute messages for user_name
+         exit                                           end and close app
 
-         //TODO
-         add_to_call call_name [ui]* : add user to call_name
-         mute_call call_name
-         mute_call_message call_name
 
-
-         // if the message send is the first we should create a new discussion, if not just add the message to the discussion
-
+        // if the message send is the first we should create a new discussion, if not just add the message to the discussion
 */
         public static List<User> users;
         public static List<Discussion> discussions;
@@ -65,12 +64,47 @@ public class Main {
                 }
                 //   create_call [ui]*: create call  with optional users name
                 else if (input.startsWith("create_call")) {
-
                     //check if feature is enabled
                     if(hasCall){
                     createCall(input);
                 } else{
-                        System.out.println("Invalid command : The call feature is not activated");
+                        System.out.println("Invalid command : The Call feature is not activated");
+                    }
+                }
+                //mute_calls user_name : mute the calls for this user_name
+                else if (input.startsWith("mute_calls")) {
+                    //check if feature is enabled
+                    if(hasCallMuter){
+                        muteCall(input);
+                    } else{
+                        System.out.println("Invalid command : The  Call muter feature is not activated");
+                    }
+                }
+                //unmute_calls user_name : unmute the calls for this user_name
+                else if (input.startsWith("unmute_calls")) {
+                    //check if feature is enabled
+                    if(hasCallMuter){
+                        unmuteCall(input);
+                    } else{
+                        System.out.println("Invalid command : The  Call muter feature is not activated");
+                    }
+                }
+                //mute_messages user_name : mute messages for user_name
+                else if(input.startsWith("mute_messages")){
+                    //check if feature is enabled
+                    if(hasMessageMuter){
+                        muteMessage(input);
+                    } else{
+                        System.out.println("Invalid command : The  Message muter feature is not activated");
+                    }
+                }
+                //unmute_messages user_name : mute messages for user_name
+                else if (input.startsWith("unmute_messages")) {
+                    //check if feature is enabled
+                    if(hasMessageMuter){
+                        unmuteMessage(input);
+                    } else{
+                        System.out.println("Invalid command : The  Message muter feature is not activated");
                     }
                 }
                 else {
@@ -79,6 +113,65 @@ public class Main {
             }
             scanner.close();
         }
+
+    //mute_messages user_name : mute messages for user_name
+    public static void muteMessage(String input){
+        Pattern pattern = Pattern.compile("mute_messages\\s+(\\w+)");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            String user_name = matcher.group(1);
+            for (Call c: calls) {
+                c.usersMessagesMute.add(user_name);
+            }
+        }
+        else {
+            System.out.println("Invalid command");
+        }
+    }
+    //unmute_messages user_name : mute messages for user_name
+    public static void unmuteMessage(String input){
+        Pattern pattern = Pattern.compile("unmute_messages\\s+(\\w+)");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            String user_name = matcher.group(1);
+            for (Call c: calls) {
+                c.usersMessagesMute.remove(user_name);
+            }
+        }
+        else {
+            System.out.println("Invalid command");
+        }
+    }
+
+    //mute_calls user_name : mute the calls for this user_name
+         public static void muteCall(String input){
+             Pattern pattern = Pattern.compile("mute_calls\\s+(\\w+)");
+             Matcher matcher = pattern.matcher(input);
+             if (matcher.matches()) {
+                 String user_name = matcher.group(1);
+                 for (Call c: calls) {
+                     c.usersCallMute.add(user_name);
+                 }
+             }
+             else {
+                 System.out.println("Invalid command");
+             }
+         }
+
+         public static void unmuteCall(String input){
+             Pattern pattern = Pattern.compile("unmute_calls\\s+(\\w+)");
+             Matcher matcher = pattern.matcher(input);
+             if (matcher.matches()) {
+                 String user_name = matcher.group(1);
+                 for (Call c: calls) {
+                     c.usersCallMute.remove(user_name);
+                 }
+             }
+             else {
+                 System.out.println("Invalid command");
+             }
+         }
+
 
     //   activate_feature feature_name : activate the feature_name (Call,Mute,Message_muter,Call_muter)
         public static void activateFeature(String input){
@@ -91,6 +184,9 @@ public class Main {
                 if(feature_name.equals("Message_muter")){hasMessageMuter=true;}
                 if(feature_name.equals("Call_muter")){hasCallMuter=true;}
             }
+            else {
+                System.out.println("Invalid command");
+            }
         }
 
         public static void createCall(String input){
@@ -98,12 +194,15 @@ public class Main {
             Matcher matcher = pattern.matcher(input);
             String[] users_in_call = new String[0];
             if (matcher.find()) {
-                String usersString = matcher.group(0);
+                String usersString = matcher.group(1);
                  users_in_call = usersString.split("\\s+");
+                Call new_call = new Call(hasMute,hasCallMuter,hasMessageMuter);
+                new_call.users.addAll(Arrays.asList(users_in_call));
+                calls.add(new_call);
             }
-            Call new_call = new Call(hasMute,hasCallMuter,hasMessageMuter);
-            new_call.users.addAll(Arrays.asList(users_in_call));
-            calls.add(new_call);
+            else {
+                System.out.println("Invalid command");
+            }
         }
 
         // create_user user_name :  create user with name user_name
