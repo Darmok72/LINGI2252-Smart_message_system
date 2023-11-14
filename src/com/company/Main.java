@@ -23,7 +23,6 @@ public class Main {
          unmute_messages user_name                      mute messages for user_name
          exit                                           end and close app
 
-
         // if the message send is the first we should create a new discussion, if not just add the message to the discussion
 */
         public static List<User> users;
